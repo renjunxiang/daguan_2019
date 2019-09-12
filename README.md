@@ -51,4 +51,5 @@ bert(dupe_factor=1,num_train_steps=200000) | 0.900 | 没做
 bert(dupe_factor=4,num_train_steps=100000) | 0.895 | 没做
 
 ## **其他说明**
-因为最近讨论bert的一些细节，才记起来有这个比赛。当初只是练手训练bert，而且做的时候离结束就剩一周时间，所以没怎么深挖，如有问题请自行debug。整体应该没啥大问题，因为我线上提交过4次，对主办方提供比赛数据表示感谢。
+因为最近讨论bert的一些细节，才记起来有这个比赛。当初只是练手训练bert，而且做的时候离结束就剩一周时间，所以没怎么深挖，如有问题请自行debug。整体应该没啥大问题，因为我线上提交过4次，对主办方提供比赛数据表示感谢。<br>
+性能：我自己用的是1080ti，bert(max_seq_length=160,train_batch_size=32,num_train_steps=20000)单卡大约5h；朋友用v100(16g)帮忙跑了bert(max_seq_length=160,train_batch_size=32,num_train_steps=200000)，单卡大约1.5天。
