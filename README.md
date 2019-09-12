@@ -27,7 +27,7 @@
 ## **训练BERT**
 本次比赛的重头戏，我也是第一次自己训练，还是觉得有点成就感的。采用谷歌官方脚本:<https://github.com/google-research/bert>，<br><br>
 1.运行```python make_corpus.py```，构建语料（里面的字典可以不构建，看到底需不需要全部词语），把训练集、测试集、语料集都合并进texts_all.txt中，空格分隔；<br><br>
-2.运行```make_vocab.py```，用到了之前生成字典，当然你也可以不用，主要看你的vocab到底需不需要全部词语；<br><br>
+2.运行```python make_vocab.py```，用到了之前生成字典，当然你也可以不用，主要看你的vocab到底需不需要全部词语；<br><br>
 3.运行```python create_pretraining_data.py --input_file=./data/texts_all.txt --output_file=./data/texts_all_160_24_4_1.tfrecord --vocab_file=./data/vocab.txt --do_lower_case=True --max_seq_length=160 --max_predictions_per_seq=24 --masked_lm_prob=0.15 --random_seed=4 --dupe_factor=1```，构建语料，耗时较长建议后台运行；<br><br>
 4.运行```CUDA_VISIBLE_DEVICES=0 python run_pretraining.py --input_file=./data/texts_all_160_24_1_1.tfrecord --output_dir=./models/texts_all_160_24_1_1/ --do_train=True --do_eval=True --bert_config_file=./data/bert_config.json --train_batch_size=32 --eval_batch_size=8 --max_seq_length=160 --max_predictions_per_seq=24 --num_train_steps=100000 --num_warmup_steps=10000 --learning_rate=5e-5 --save_checkpoints_steps 2000 --iterations_per_loop 2000```，耗时较长建议后台运行，1080ti需要若干天（取决于你的参数），不支持分布式，原因不详，所以我用了4块卡分别训练了4个不同种子的模型；<br><br>
 5.运行```python convert_tf_checkpoint_to_pytorch.py --tf_checkpoint_path ./try/model.ckpt-28000 --bert_config_file ./try/bert_config.json --pytorch_dump_path ./try/pytorch_model.bin```，转为pytorch模型，如果你是tf选手可以忽略此步；<br><br>
@@ -42,9 +42,13 @@
 
 预训练Model | 线上得分（单模）| 线上得分（融合）
 ---------- | -------- | --------
-无 | 0.84 | 0.86
-word2vec | 0.86 | 0.88
-bert | 0.88 | 0.90
+无 | 0.840 | 0.860
+word2vec(epoch=3,dim=300) | 0.860 | 0.880
+word2vec(epoch=5,dim=300) | 0.865 | 0.885
+bert(dupe_factor=1,num_train_steps=30000) | 0.875 | 0.900
+bert(dupe_factor=1,num_train_steps=80000) | 0.885 | 0.905
+bert(dupe_factor=1,num_train_steps=200000) | 0.900 | 没做
+bert(dupe_factor=4,num_train_steps=100000) | 0.895 | 没做
 
 ## **其他说明**
 因为最近讨论bert的一些细节，才记起来有这个比赛。当初只是练手训练bert，而且做的时候离结束就剩一周时间，所以没怎么深挖，如有问题请自行debug。整体应该没啥大问题，因为我线上提交过4次，对主办方提供比赛数据表示感谢。
